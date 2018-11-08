@@ -3,7 +3,9 @@ package com.demo.server;
 import com.demo.protocol.Packet;
 import com.demo.protocol.PacketCodeC;
 import com.demo.protocol.request.LoginRequestPacket;
+import com.demo.protocol.request.MessageRequestPacket;
 import com.demo.protocol.respones.LoginResponsePacket;
+import com.demo.protocol.respones.MessageResponsePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -32,6 +34,15 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
             }
             ByteBuf response = PacketCodeC.INSTANCE.encode(ctx.alloc(), responsePacket);
             ctx.channel().writeAndFlush(response);
+        } else if (packet instanceof MessageRequestPacket) {
+            MessageRequestPacket messageRequestPacket = (MessageRequestPacket) packet;
+            System.out.println("【服务端】:收到客户端消息：" + messageRequestPacket.getMessage());
+
+            MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
+            messageResponsePacket.setMessage("【服务端回复】:" + messageRequestPacket.getMessage());
+
+            ByteBuf buf = PacketCodeC.INSTANCE.encode(ctx.alloc(), messageResponsePacket);
+            ctx.channel().writeAndFlush(buf);
         }
 
     }

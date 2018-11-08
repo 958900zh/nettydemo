@@ -3,7 +3,10 @@ package com.demo.client;
 import com.demo.protocol.Packet;
 import com.demo.protocol.PacketCodeC;
 import com.demo.protocol.request.LoginRequestPacket;
+import com.demo.protocol.request.MessageRequestPacket;
 import com.demo.protocol.respones.LoginResponsePacket;
+import com.demo.protocol.respones.MessageResponsePacket;
+import com.demo.util.LoginUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,10 +42,15 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
             LoginResponsePacket responsePacket = (LoginResponsePacket) packet;
 
             if (responsePacket.isSuccess()) {
+                LoginUtil.markAsLogin(ctx.channel());
                 System.out.println("【客户端】:登陆成功");
             } else {
                 System.out.println("【客户端】:登陆失败，原因是: " + responsePacket.getReason());
             }
+        } else if (packet instanceof MessageResponsePacket) {
+            MessageResponsePacket messageResponsePacket = (MessageResponsePacket) packet;
+            System.out.println("【客户端】:收到服务端消息：" + messageResponsePacket.getMessage());
+
         }
     }
 }
