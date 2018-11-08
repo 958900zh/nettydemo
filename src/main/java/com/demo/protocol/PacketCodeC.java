@@ -7,7 +7,6 @@ import com.demo.protocol.respones.MessageResponsePacket;
 import com.demo.serialize.Serializer;
 import com.demo.serialize.impl.JSONSerializer;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ import static com.demo.protocol.command.Command.*;
 
 public class PacketCodeC {
 
-    private static final int MAGIC_NUMBER = 0x12345678;
+    public static final int MAGIC_NUMBER = 0x12345678;
 
     private final Map<Byte, Class<? extends Packet>> packetTypeMap;
     private final Map<Byte, Serializer> serializerMap;

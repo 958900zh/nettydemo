@@ -2,6 +2,8 @@ package com.demo.server;
 
 import com.demo.codec.PacketDecoder;
 import com.demo.codec.PacketEncoder;
+import com.demo.codec.Spliter;
+import com.demo.server.handler.AuthHandler;
 import com.demo.server.handler.LoginRequestHandler;
 import com.demo.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -30,8 +32,10 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new AuthHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }

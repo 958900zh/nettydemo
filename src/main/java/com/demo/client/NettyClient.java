@@ -4,6 +4,7 @@ import com.demo.client.handler.LoginResponseHandler;
 import com.demo.client.handler.MessageResponseHandler;
 import com.demo.codec.PacketDecoder;
 import com.demo.codec.PacketEncoder;
+import com.demo.codec.Spliter;
 import com.demo.protocol.request.MessageRequestPacket;
 import com.demo.util.LoginUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -35,6 +36,7 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
@@ -68,15 +70,13 @@ public class NettyClient {
     private static void startConsoleThread(Channel channel) {
         new Thread(() -> {
             while (!Thread.interrupted()) {
-                if (LoginUtil.hasLogin(channel)) {
-                    System.out.println("输入消息发送至服务端: ");
-                    Scanner sc = new Scanner(System.in);
-                    String line = sc.nextLine();
+                System.out.println("输入消息发送至服务端: ");
+                Scanner sc = new Scanner(System.in);
+                String line = sc.nextLine();
 
-                    MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
-                    messageRequestPacket.setMessage(line);
-                    channel.writeAndFlush(messageRequestPacket);
-                }
+                MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
+                messageRequestPacket.setMessage(line);
+                channel.writeAndFlush(messageRequestPacket);
             }
         }).start();
     }
